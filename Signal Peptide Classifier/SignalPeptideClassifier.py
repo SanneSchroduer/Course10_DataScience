@@ -5,6 +5,8 @@ from sklearn.metrics import plot_confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn import svm, tree
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import NearestCentroid
+
 
 import matplotlib.pyplot as plt
 import logging
@@ -31,6 +33,7 @@ def main():
     - Gaussian Naive Bayes
     - SVM
     - Decision tree
+    - NearestCentroidClassifier
     """
     coding = 'identities'
     one_hots = preprocessing(instances_aa)
@@ -38,6 +41,7 @@ def main():
     gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    nearest_centroid_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
 
     """
     Coding: characteristics
@@ -46,12 +50,14 @@ def main():
     - Gaussian Naive Bayes
     - SVM
     - Decision tree
+    - NearestCentroidClassifier
     """
     coding = 'characteristics'
     seq_train, seq_test, class_ids_train, class_ids_test = split_data(instances_characteristics, class_ids)
     gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    nearest_centroid_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
 
 
 def open_file():
@@ -117,7 +123,7 @@ Output: 2D list of one hot encoded vectors
 
 
 def preprocessing(sequence_list):
-    logger.info('transform data to one hot encoded vectors')
+    logger.info(' transform data to one hot encoded vectors')
     enc = OneHotEncoder()
     enc.fit(sequence_list)
     one_hots = enc.transform(sequence_list[1:]).toarray()  # type = np.ndarray
@@ -168,6 +174,12 @@ def support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test,
 """
 Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
 Function: fitting a Decision tree model with the given data. Calls the confusion_matrix() function.
+
+DecisionTreeClassifier is a class capable of performing multi-class classification on a dataset.
+
+As with other classifiers, DecisionTreeClassifier takes as input two arrays: an array X, sparse or 
+dense, of size [n_samples, n_features] holding the training samples, and an array Y of integer values, 
+size [n_samples], holding the class labels for the training samples.
 """
 
 
@@ -175,6 +187,25 @@ def decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding):
     logger.info(' start fitting decision tree model')
     classifier = tree.DecisionTreeClassifier().fit(seq_train, class_ids_train)
     algorithm = 'Decision tree'
+    confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
+
+
+"""
+Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
+Function: fitting the nearest_centroid model with the given data. Calls the confusion_matrix() function.
+
+The NearestCentroid classifier is a simple algorithm that represents each class by the centroid of 
+its members. In effect, this makes it similar to the label updating phase of the sklearn.cluster.KMeans 
+algorithm. It also has no parameters to choose, making it a good baseline classifier. It does, however, 
+suffer on non-convex classes, as well as when classes have drastically different variances, as equal 
+variance in all dimensions is assumed.
+"""
+
+
+def nearest_centroid_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+    logger.info(' start fitting nearest centroid model')
+    classifier = NearestCentroid().fit(seq_train, class_ids_train)
+    algorithm = 'Nearest Centroid classifier'
     confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
 
 
