@@ -3,7 +3,7 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import plot_confusion_matrix
 from sklearn.model_selection import train_test_split
-from sklearn import svm
+from sklearn import svm, tree
 from sklearn.naive_bayes import GaussianNB
 
 import matplotlib.pyplot as plt
@@ -30,24 +30,28 @@ def main():
     This data is splitted into train and test data, and used to fit the following models:
     - Gaussian Naive Bayes
     - SVM
+    - Decision tree
     """
     coding = 'identities'
     one_hots = preprocessing(instances_aa)
     seq_train, seq_test, class_ids_train, class_ids_test = split_data(one_hots, class_ids)
     gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding)
 
-    # """
-    # Coding: characteristics
-    # Input for split_data: Aminoacid characteristics (weight and pI)
-    # This data is splitted into train and test data, and used to fit the following models:
-    # - Gaussian Naive Bayes
-    # - SVM
-    # """
-    # coding = 'characteristics'
-    # seq_train, seq_test, class_ids_train, class_ids_test = split_data(instances_characteristics, class_ids)
-    # gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
-    # support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    """
+    Coding: characteristics
+    Input for split_data: Aminoacid characteristics (weight and pI)
+    This data is splitted into train and test data, and used to fit the following models:
+    - Gaussian Naive Bayes
+    - SVM
+    - Decision tree
+    """
+    coding = 'characteristics'
+    seq_train, seq_test, class_ids_train, class_ids_test = split_data(instances_characteristics, class_ids)
+    gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding)
 
 
 def open_file():
@@ -101,11 +105,6 @@ def parse_file(train_file):
             instances_characteristics.append(aa_chars)
             instances_aa.append(aa_seq)
 
-    for i in range(1):
-        print('classid', class_ids[i])
-        print('charac', instances_characteristics[i])
-        print('aa', instances_aa[i])
-
     return instances_aa, instances_characteristics, class_ids
 
 
@@ -123,8 +122,6 @@ def preprocessing(sequence_list):
     enc.fit(sequence_list)
     one_hots = enc.transform(sequence_list[1:]).toarray()  # type = np.ndarray
 
-    for i in range(1):
-        print('one hot', one_hots[i])
     return one_hots
 
 
@@ -165,6 +162,19 @@ def support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test,
     logger.info(' start fitting SVM model')
     classifier = svm.SVC(kernel="rbf").fit(seq_train, class_ids_train)
     algorithm = 'Support Vector Machine'
+    confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
+
+
+"""
+Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
+Function: fitting a Decision tree model with the given data. Calls the confusion_matrix() function.
+"""
+
+
+def decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+    logger.info(' start fitting decision tree model')
+    classifier = tree.DecisionTreeClassifier().fit(seq_train, class_ids_train)
+    algorithm = 'Decision tree'
     confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
 
 
