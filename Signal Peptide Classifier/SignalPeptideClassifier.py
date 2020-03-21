@@ -33,7 +33,7 @@ def main():
     - Gaussian Naive Bayes
     - SVM
     - Neural network models (supervised) Multi-layer Perception
-    - Normal and Shrinkage Linear Discriminant Analysis for class
+    - Ensemble Random Forest Classifier
     """
     coding = 'identities'
     one_hots = preprocessing(instances_aa)
@@ -51,7 +51,7 @@ def main():
     - Gaussian Naive Bayes
     - SVM
     - Neural network models (supervised) Multi-layer Perception
-    - Normal and Shrinkage Linear Discriminant Analysis for class
+    - Ensemble Random Forest Classifier
     """
     coding = 'characteristics'
     seq_train, seq_test, class_ids_train, class_ids_test = split_data(instances_characteristics, class_ids)
@@ -165,7 +165,7 @@ def support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test,
 
 """
 Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
-Function:
+Function: fitting a (Neural Network) Multi Layer Perception model with the given data. Calls the confusion_matrix() function.
 """
 
 def multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding):
@@ -178,7 +178,7 @@ def multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test,
 
 """
 Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
-Function:
+Function: fitting a (Ensemble) Random Forest Classifier Model with the given data. Calls the confusion_matrix() function.
 """
 
 def random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding):
