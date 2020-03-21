@@ -5,6 +5,8 @@ from sklearn.metrics import plot_confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 import matplotlib.pyplot as plt
 import logging
@@ -30,12 +32,17 @@ def main():
     This data is splitted into train and test data, and used to fit the following models:
     - Gaussian Naive Bayes
     - SVM
+    - Neural network models (supervised) Multi-layer Perception
+    - Normal and Shrinkage Linear Discriminant Analysis for class
     """
     coding = 'identities'
     one_hots = preprocessing(instances_aa)
     seq_train, seq_test, class_ids_train, class_ids_test = split_data(one_hots, class_ids)
     gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+
 
     """
     Coding: characteristics
@@ -43,11 +50,16 @@ def main():
     This data is splitted into train and test data, and used to fit the following models:
     - Gaussian Naive Bayes
     - SVM
+    - Neural network models (supervised) Multi-layer Perception
+    - Normal and Shrinkage Linear Discriminant Analysis for class
     """
     coding = 'characteristics'
     seq_train, seq_test, class_ids_train, class_ids_test = split_data(instances_characteristics, class_ids)
     gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+
 
 def open_file():
     train_file = open('train_set.fasta').readlines()
@@ -148,6 +160,32 @@ def support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test,
     logger.info(' start fitting SVM model')
     classifier = svm.SVC(kernel="rbf").fit(seq_train, class_ids_train)
     algorithm = 'Support Vector Machine'
+    confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
+
+
+"""
+Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
+Function:
+"""
+
+def multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+
+    logger.info(f' start fitting MLP model')
+    classifier = MLPClassifier().fit(seq_train, class_ids_train)
+    algorithm = 'Neural Network Multi Layer Perceptron'
+    confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
+
+
+"""
+Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
+Function:
+"""
+
+def random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+
+    logger.info(f' start fitting RFC model')
+    classifier = RandomForestClassifier().fit(seq_train, class_ids_train)
+    algorithm = 'Ensemble Random Forest Classifier'
     confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
 
 
