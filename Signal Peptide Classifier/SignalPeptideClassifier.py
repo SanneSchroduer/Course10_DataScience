@@ -168,11 +168,11 @@ def stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_
         # max_iter=12 (maximum of iterations in combination with the log loss function, tried: 5, 8, 10, 12, 15 and 20)
 
     elif coding == 'characteristics':
-        classifier = SGDClassifier(loss='log', penalty='l2', max_iter=18)
+        classifier = SGDClassifier(loss='log', penalty='l2', max_iter=10)
         # the following parameters are set to fit the optimal model and produce the optimal confusion matrix
         # loss='log' (loss function, tried: hinge, modified_huber and log)
         # penalty='l2' (L2 regularization)
-        # max_iter=12 (maximum of iterations in combination with the log loss function, tried: 5, 8, 10, 12, 15, 18 and 20)
+        # max_iter=10 (maximum of iterations in combination with the log loss function, tried: 5, 8, 10, 12, 15, 18 and 20)
 
     classifier.fit(seq_train, class_ids_train)
     algorithm = 'Stochastic Gradient Descent'
