@@ -4,6 +4,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import plot_confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn import svm
+from sklearn.linear_model import SGDClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -42,6 +43,7 @@ def main():
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_test, coding)
 
 
     """
@@ -59,7 +61,7 @@ def main():
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
-
+    stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_test, coding)
 
 def open_file():
     train_file = open('train_set.fasta').readlines()
@@ -162,6 +164,31 @@ def support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test,
     algorithm = 'Support Vector Machine'
     confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
 
+"""
+Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
+Function: fitting a Stochastic Gradient Descent model with the given data. Calls the confusion_matrix() function.
+"""
+def stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+
+    logger.info(' start fitting SGD model')
+    if coding == 'identities':
+        classifier = SGDClassifier(loss='log', penalty='l2', max_iter=12)
+        # the following parameters are set to fit the optimal model and produce the optimal confusion matrix
+        # loss='log' (loss function, tried: hinge, modified_huber and log)
+        # penalty='l2' (L2 regularization)
+        # max_iter=12 (maximum of iterations in combination with the log loss function, tried: 5, 8, 10, 12, 15 and 20)
+
+    elif coding == 'characteristics':
+        classifier = SGDClassifier(loss='log', penalty='l2', max_iter=10)
+        # the following parameters are set to fit the optimal model and produce the optimal confusion matrix
+        # loss='log' (loss function, tried: hinge, modified_huber and log)
+        # penalty='l2' (L2 regularization)
+        # max_iter=10 (maximum of iterations in combination with the log loss function, tried: 5, 8, 10, 12, 15, 18 and 20)
+
+    classifier.fit(seq_train, class_ids_train)
+    algorithm = 'Stochastic Gradient Descent'
+    confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
+
 
 """
 Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
@@ -195,7 +222,7 @@ Function: plot the confusion matrix corresponding with the given test data and m
 Output: a matplotlib plot of the calculated confusion matrix
 """
 def confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding):
-    #titles_options = [("Confusion matrix, without normalization", None),
+    # titles_options = [("Confusion matrix, without normalization", None),
                       #("Normalized confusion matrix", 'true')]
 
     titles_options = [("Normalized confusion matrix", 'true')]
