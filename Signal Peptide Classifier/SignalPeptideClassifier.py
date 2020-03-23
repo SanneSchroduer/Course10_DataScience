@@ -1,4 +1,7 @@
 import re
+import matplotlib.pyplot as plt
+import logging
+
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import plot_confusion_matrix
@@ -6,10 +9,10 @@ from sklearn.model_selection import train_test_split
 from sklearn import svm, tree
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import NearestCentroid
+from sklearn.linear_model import SGDClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import RandomForestClassifier
 
-
-import matplotlib.pyplot as plt
-import logging
 
 logger = logging.getLogger('classifier')
 logging.info('Start processing data')
@@ -34,6 +37,8 @@ def main():
     - SVM
     - Decision tree
     - NearestCentroidClassifier
+    - Neural network models (supervised) Multi-layer Perception
+    - Ensemble Random Forest Classifier
     """
     coding = 'identities'
     one_hots = preprocessing(instances_aa)
@@ -42,7 +47,11 @@ def main():
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     nearest_centroid_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_test, coding)
 
+    
     """
     Coding: characteristics
     Input for split_data: Aminoacid characteristics (weight and pI)
@@ -51,6 +60,8 @@ def main():
     - SVM
     - Decision tree
     - NearestCentroidClassifier
+    - Neural network models (supervised) Multi-layer Perception
+    - Ensemble Random Forest Classifier
     """
     coding = 'characteristics'
     seq_train, seq_test, class_ids_train, class_ids_test = split_data(instances_characteristics, class_ids)
@@ -58,7 +69,9 @@ def main():
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     nearest_centroid_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
-
+    multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
+    stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_test, coding)
 
 def open_file():
     train_file = open('train_set.fasta').readlines()
@@ -168,6 +181,57 @@ def support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test,
     logger.info(' start fitting SVM model')
     classifier = svm.SVC(kernel="rbf").fit(seq_train, class_ids_train)
     algorithm = 'Support Vector Machine'
+    confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
+
+"""
+Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
+Function: fitting a Stochastic Gradient Descent model with the given data. Calls the confusion_matrix() function.
+"""
+def stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+
+    logger.info(' start fitting SGD model')
+    if coding == 'identities':
+        classifier = SGDClassifier(loss='log', penalty='l2', max_iter=12)
+        # the following parameters are set to fit the optimal model and produce the optimal confusion matrix
+        # loss='log' (loss function, tried: hinge, modified_huber and log)
+        # penalty='l2' (L2 regularization)
+        # max_iter=12 (maximum of iterations in combination with the log loss function, tried: 5, 8, 10, 12, 15 and 20)
+
+    elif coding == 'characteristics':
+        classifier = SGDClassifier(loss='log', penalty='l2', max_iter=10)
+        # the following parameters are set to fit the optimal model and produce the optimal confusion matrix
+        # loss='log' (loss function, tried: hinge, modified_huber and log)
+        # penalty='l2' (L2 regularization)
+        # max_iter=10 (maximum of iterations in combination with the log loss function, tried: 5, 8, 10, 12, 15, 18 and 20)
+
+    classifier.fit(seq_train, class_ids_train)
+    algorithm = 'Stochastic Gradient Descent'
+    confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
+
+
+"""
+Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
+Function: fitting a (Neural Network) Multi Layer Perception model with the given data. Calls the confusion_matrix() function.
+"""
+
+def multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+
+    logger.info(f' start fitting MLP model')
+    classifier = MLPClassifier().fit(seq_train, class_ids_train)
+    algorithm = 'Neural Network Multi Layer Perceptron'
+    confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
+
+
+"""
+Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
+Function: fitting a (Ensemble) Random Forest Classifier Model with the given data. Calls the confusion_matrix() function.
+"""
+
+def random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+
+    logger.info(f' start fitting RFC model')
+    classifier = RandomForestClassifier().fit(seq_train, class_ids_train)
+    algorithm = 'Ensemble Random Forest Classifier'
     confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
 
 
