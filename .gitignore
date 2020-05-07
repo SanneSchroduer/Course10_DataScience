@@ -1,0 +1,9 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+#directories to ignore
+.idea/
+
+#environments
+.venv
+venv/
