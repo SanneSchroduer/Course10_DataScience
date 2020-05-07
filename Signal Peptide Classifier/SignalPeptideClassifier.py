@@ -19,7 +19,7 @@ logging.info('Start processing data')
 logger.setLevel(logging.DEBUG)
 
 # source: http://www.chem.ucalgary.ca/courses/351/Carey5th/Ch27/ch27-1-4-2.html
-# dictionary with pI values per aminoacid
+# dictionary with pI values per amino acid
 aa_pI = {"G": 5.97, "A": 6.00, "V": 5.96, "L": 5.98, "I": 6.02, "M": 5.74,
          "P": 6.30, "F": 5.48, "W": 5.89, "N": 5.41, "Q": 5.65, "S": 5.68, "T": 5.60,
          "Y": 5.66, "C": 5.07, "D": 2.77, "E": 3.22, "K": 9.74, "R": 10.76, "H": 7.59}
@@ -34,10 +34,11 @@ def main():
     Input for split_data: Aminoacid identities converted to one hot encoded vectors
     This data is splitted into train and test data, and used to fit the following models:
     - Gaussian Naive Bayes
-    - SVM
-    - Decision tree
-    - NearestCentroidClassifier
-    - Neural network models (supervised) Multi-layer Perception
+    - Stochastic Gradient Descent
+    - Support Vector Machine
+    - Decision Tree
+    - Nearest Centroid Classifier
+    - Neural Network Multi-layer Perception
     - Ensemble Random Forest Classifier
     """
     coding = 'identities'
@@ -51,16 +52,16 @@ def main():
     random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_test, coding)
 
-    
     """
     Coding: characteristics
     Input for split_data: Aminoacid characteristics (weight and pI)
     This data is splitted into train and test data, and used to fit the following models:
     - Gaussian Naive Bayes
-    - SVM
-    - Decision tree
-    - NearestCentroidClassifier
-    - Neural network models (supervised) Multi-layer Perception
+    - Stochastic Gradient Descent
+    - Support Vector Machine
+    - Decision Tree
+    - Nearest Centroid Classifier
+    - Neural Network Multi-layer Perception
     - Ensemble Random Forest Classifier
     """
     coding = 'characteristics'
@@ -88,8 +89,6 @@ and the corresponding class-ids (SP/NO-SP) are saved in a list.
 In addition, the weight and the pI value of the first 40 aminoacids are saved into a second 2D list.
 Output: 2D list of aminoacid identities, 2D list of amicoacid characteristisc, list of the class-ids
 """
-
-
 def parse_file(train_file):
     instances_aa = []
     instances_characteristics = []
@@ -133,8 +132,6 @@ Function: converts each instance (in other words: aminoacid sequence),
 to a one hot encoded vector using the OneHotEndoder function from sklearn.
 Output: 2D list of one hot encoded vectors
 """
-
-
 def preprocessing(sequence_list):
     logger.info(' transform data to one hot encoded vectors')
     enc = OneHotEncoder()
@@ -150,21 +147,18 @@ Function: splits the data into 80% train and 20% test data
 Output: seq_train list and seq_test list with the one hot encoded vectors/aminoacids characteristics
 class_ids_train list and class_ids_test list with the corresponding class-ids
 """
-
-
 def split_data(data, class_ids):
-    seq_train, seq_test, class_ids_train, class_ids_test = train_test_split(data, class_ids, test_size=0.20,
-                                                                            random_state=42)
+    seq_train, seq_test, class_ids_train, class_ids_test = train_test_split(data, class_ids, test_size=0.20, random_state=42)
+
     return seq_train, seq_test, class_ids_train, class_ids_test
 
 
 """
-Input: the train data (to fit the model) and test data (for the confusion matrix)
+Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
 Function: fitting a Gaussion Naive Bayes model with the given data. Calls the confusion_matrix() function.
 """
-
-
 def gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+
     logger.info(' start fitting gaussian naive bayes model')
     classifier = GaussianNB().fit(seq_train, class_ids_train)
     algorithm = 'Gaussian Naive Bayes'
@@ -175,9 +169,8 @@ def gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, c
 Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
 Function: fitting a Support Vector Machine model with the given data. Calls the confusion_matrix() function.
 """
-
-
 def support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+
     logger.info(' start fitting SVM model')
     classifier = svm.SVC(kernel="rbf").fit(seq_train, class_ids_train)
     algorithm = 'Support Vector Machine'
@@ -213,7 +206,6 @@ def stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_
 Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
 Function: fitting a (Neural Network) Multi Layer Perception model with the given data. Calls the confusion_matrix() function.
 """
-
 def multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding):
 
     logger.info(f' start fitting MLP model')
@@ -226,7 +218,6 @@ def multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test,
 Input: the train data (to fit the model) and test data (for the confusion matrix) and the coding (identity versus characteristics)
 Function: fitting a (Ensemble) Random Forest Classifier Model with the given data. Calls the confusion_matrix() function.
 """
-
 def random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding):
 
     logger.info(f' start fitting RFC model')
@@ -240,14 +231,12 @@ Input: the train data (to fit the model) and test data (for the confusion matrix
 Function: fitting a Decision tree model with the given data. Calls the confusion_matrix() function.
 
 DecisionTreeClassifier is a class capable of performing multi-class classification on a dataset.
-
 As with other classifiers, DecisionTreeClassifier takes as input two arrays: an array X, sparse or 
 dense, of size [n_samples, n_features] holding the training samples, and an array Y of integer values, 
 size [n_samples], holding the class labels for the training samples.
 """
-
-
 def decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+
     logger.info(' start fitting decision tree model')
     classifier = tree.DecisionTreeClassifier().fit(seq_train, class_ids_train)
     algorithm = 'Decision tree'
@@ -264,9 +253,8 @@ algorithm. It also has no parameters to choose, making it a good baseline classi
 suffer on non-convex classes, as well as when classes have drastically different variances, as equal 
 variance in all dimensions is assumed.
 """
-
-
 def nearest_centroid_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding):
+
     logger.info(' start fitting nearest centroid model')
     classifier = NearestCentroid().fit(seq_train, class_ids_train)
     algorithm = 'Nearest Centroid classifier'
@@ -278,13 +266,9 @@ Input: the test data, the algorithm name and the type of coding (identity versus
 Function: plot the confusion matrix corresponding with the given test data and model
 Output: a matplotlib plot of the calculated confusion matrix
 """
-
-
 def confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding):
-    # titles_options = [("Confusion matrix, without normalization", None),
-    # ("Normalized confusion matrix", 'true')]
 
-    titles_options = [("Normalized confusion matrix", 'true')]
+    titles_options = [("Confusion matrix, without normalization", None), ("Normalized confusion matrix", 'true')]
 
     logger.info(' start making confusion matrix')
     for title, normalize in titles_options:
