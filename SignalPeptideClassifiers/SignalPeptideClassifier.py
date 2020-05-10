@@ -1,7 +1,7 @@
 import re
 import matplotlib.pyplot as plt
 import logging
-
+import preprocessData
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import plot_confusion_matrix
@@ -26,8 +26,8 @@ aa_pI = {"G": 5.97, "A": 6.00, "V": 5.96, "L": 5.98, "I": 6.02, "M": 5.74,
 
 
 def main():
-    train_file, test_file = open_file()
-    instances_aa, instances_characteristics, class_ids = parse_file(train_file)
+    instances_aa, instances_characteristics, class_ids = preprocessData.parse_file()
+    one_hots = preprocessData.preprocessing(instances_aa)
 
     """
     Coding: identities
@@ -42,7 +42,6 @@ def main():
     - Ensemble Random Forest Classifier
     """
     coding = 'identities'
-    one_hots = preprocessing(instances_aa)
     seq_train, seq_test, class_ids_train, class_ids_test = split_data(one_hots, class_ids)
     gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
@@ -73,72 +72,6 @@ def main():
     multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_test, coding)
-
-def open_file():
-    train_file = open('train_set.fasta').readlines()
-    test_file = open('benchmark_set.fasta').readlines()
-    logger.info(' Read training file')
-    return train_file, test_file
-
-
-"""
-Input: The content of the opened train file
-Function: Reads all the lines of the train file, and searches for aminoacid sequences with the SP and NO-SP label.
-Of the sequences that match the pattern, the first 40 aminoacids are saved into a 2D list, 
-and the corresponding class-ids (SP/NO-SP) are saved in a list.
-In addition, the weight and the pI value of the first 40 aminoacids are saved into a second 2D list.
-Output: 2D list of aminoacid identities, 2D list of amicoacid characteristisc, list of the class-ids
-"""
-def parse_file(train_file):
-    instances_aa = []
-    instances_characteristics = []
-    class_ids = []
-    aa = ['A', 'R', 'N', 'D', 'C', 'F', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'P', 'S', 'T', 'W', 'Y',
-          'V', 'A', 'R', 'N', 'D', 'C', 'F', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'P', 'S', 'T', 'W', 'Y',
-          'V']
-
-    instances_aa.append(aa)
-
-    for index, line in enumerate(train_file):
-        match = re.search('\>([A-z0-9]+)\|([A-z]+)\|(NO_SP|SP)', line)
-        # matches the following string: (>gene id | organism | NO_SP/SP)
-
-        if match:
-            class_id = match.group(3)
-            aa_seq = []
-            aa_chars = []
-            seq = train_file[index + 1].strip()
-            counter = 0
-            class_ids.append(class_id)
-            for amino_acid in seq:
-                if counter < 40:
-                    aa_seq.append(amino_acid)
-                    counter += 1
-
-                    weight = ProteinAnalysis(amino_acid).molecular_weight()  # gets weight in g/mol (molar mass)
-                    pI = aa_pI[amino_acid]
-                    aa_chars.append(pI)
-                    aa_chars.append(weight)
-
-            instances_characteristics.append(aa_chars)
-            instances_aa.append(aa_seq)
-
-    return instances_aa, instances_characteristics, class_ids
-
-
-"""
-Input: the 2D list of the aminoacids identities (instances)
-Function: converts each instance (in other words: aminoacid sequence), 
-to a one hot encoded vector using the OneHotEndoder function from sklearn.
-Output: 2D list of one hot encoded vectors
-"""
-def preprocessing(sequence_list):
-    logger.info(' transform data to one hot encoded vectors')
-    enc = OneHotEncoder()
-    enc.fit(sequence_list)
-    one_hots = enc.transform(sequence_list[1:]).toarray()  # type = np.ndarray
-
-    return one_hots
 
 
 """
