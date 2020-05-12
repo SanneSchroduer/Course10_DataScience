@@ -2,6 +2,7 @@ import logging
 import re
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import train_test_split
 
 logger = logging.getLogger('classifier')
 logging.info('Start processing data')
@@ -67,3 +68,15 @@ def preprocessing(sequence_list):
     one_hots = enc.transform(sequence_list[1:]).toarray()  # type = np.ndarray
 
     return one_hots
+
+
+"""
+Input: 2D list of one-hot encoded vectors or 2D list of aminoacid characteristics, and the list of class-ids
+Function: splits the data into 80% train and 20% test data
+Output: seq_train list and seq_test list with the one hot encoded vectors/aminoacids characteristics
+class_ids_train list and class_ids_test list with the corresponding class-ids
+"""
+def split_data(data, class_ids):
+    seq_train, seq_test, class_ids_train, class_ids_test = train_test_split(data, class_ids, test_size=0.20, random_state=42)
+
+    return seq_train, seq_test, class_ids_train, class_ids_test

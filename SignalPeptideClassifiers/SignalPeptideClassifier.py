@@ -2,10 +2,7 @@ import re
 import matplotlib.pyplot as plt
 import logging
 import preprocessData
-from Bio.SeqUtils.ProtParam import ProteinAnalysis
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import plot_confusion_matrix
-from sklearn.model_selection import train_test_split
 from sklearn import svm, tree
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import NearestCentroid
@@ -42,7 +39,7 @@ def main():
     - Ensemble Random Forest Classifier
     """
     coding = 'identities'
-    seq_train, seq_test, class_ids_train, class_ids_test = split_data(one_hots, class_ids)
+    seq_train, seq_test, class_ids_train, class_ids_test = preprocessData.split_data(one_hots, class_ids)
     gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding)
@@ -64,7 +61,7 @@ def main():
     - Ensemble Random Forest Classifier
     """
     coding = 'characteristics'
-    seq_train, seq_test, class_ids_train, class_ids_test = split_data(instances_characteristics, class_ids)
+    seq_train, seq_test, class_ids_train, class_ids_test = preprocessData.split_data(instances_characteristics, class_ids)
     gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding)
@@ -72,18 +69,6 @@ def main():
     multi_layer_perceptron(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     random_forest_classifier(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     stochastic_gradient_descent(seq_train, seq_test, class_ids_train, class_ids_test, coding)
-
-
-"""
-Input: 2D list of one-hot encoded vectors or 2D list of aminoacid characteristics, and the list of class-ids
-Function: splits the data into 80% train and 20% test data
-Output: seq_train list and seq_test list with the one hot encoded vectors/aminoacids characteristics
-class_ids_train list and class_ids_test list with the corresponding class-ids
-"""
-def split_data(data, class_ids):
-    seq_train, seq_test, class_ids_train, class_ids_test = train_test_split(data, class_ids, test_size=0.20, random_state=42)
-
-    return seq_train, seq_test, class_ids_train, class_ids_test
 
 
 """
