@@ -4,3 +4,6 @@
 #environments
 .venv
 venv/
+
+#other
+__pycache__/
