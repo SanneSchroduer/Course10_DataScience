@@ -15,8 +15,8 @@ aa_pI = {"G": 5.97, "A": 6.00, "V": 5.96, "L": 5.98, "I": 6.02, "M": 5.74,
          "Y": 5.66, "C": 5.07, "D": 2.77, "E": 3.22, "K": 9.74, "R": 10.76, "H": 7.59}
 
 def parse_file():
-    train_file = open('../Data/train_set.fasta').readlines()
-    test_file = open('../Data/benchmark_set.fasta').readlines()
+    train_file = open('../data/train_set.fasta').readlines()
+    test_file = open('../data/benchmark_set.fasta').readlines()
     logger.info(' Read training file')
 
     instances_aa = []

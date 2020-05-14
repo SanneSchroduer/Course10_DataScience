@@ -1,7 +1,7 @@
 import re
 import matplotlib.pyplot as plt
 import logging
-import preprocessData
+import preprocess_data
 from sklearn.metrics import plot_confusion_matrix
 from sklearn import svm, tree
 from sklearn.naive_bayes import GaussianNB
@@ -23,8 +23,8 @@ aa_pI = {"G": 5.97, "A": 6.00, "V": 5.96, "L": 5.98, "I": 6.02, "M": 5.74,
 
 
 def main():
-    instances_aa, instances_characteristics, class_ids = preprocessData.parse_file()
-    one_hots = preprocessData.preprocessing(instances_aa)
+    instances_aa, instances_characteristics, class_ids = preprocess_data.parse_file()
+    one_hots = preprocess_data.preprocessing(instances_aa)
 
     """
     Coding: identities
@@ -39,7 +39,7 @@ def main():
     - Ensemble Random Forest Classifier
     """
     coding = 'identities'
-    seq_train, seq_test, class_ids_train, class_ids_test = preprocessData.split_data(one_hots, class_ids)
+    seq_train, seq_test, class_ids_train, class_ids_test = preprocess_data.split_data(one_hots, class_ids)
     gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding)
@@ -61,7 +61,7 @@ def main():
     - Ensemble Random Forest Classifier
     """
     coding = 'characteristics'
-    seq_train, seq_test, class_ids_train, class_ids_test = preprocessData.split_data(instances_characteristics, class_ids)
+    seq_train, seq_test, class_ids_train, class_ids_test = preprocess_data.split_data(instances_characteristics, class_ids)
     gaussian_naive_bayes(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     support_vector_machine(seq_train, seq_test, class_ids_train, class_ids_test, coding)
     decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding)

@@ -2,7 +2,7 @@ import collections
 import matplotlib.pyplot as plt
 import numpy as np
 import logging
-import preprocessData
+import preprocess_data
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras import layers
@@ -13,9 +13,9 @@ logging.info('Start processing data')
 logger.setLevel(logging.DEBUG)
 
 def main():
-    # instances_aa, instances_characteristics, class_ids = preprocessData.parse_file()
-    # one_hots = preprocessData.preprocessing(instances_aa)
-    # seq_train, seq_test, class_ids_train, class_ids_test = preprocessData.split_data(one_hots, class_ids)
+    # instances_aa, instances_characteristics, class_ids = preprocess_data.parse_file()
+    # one_hots = preprocess_data.preprocessing(instances_aa)
+    # seq_train, seq_test, class_ids_train, class_ids_test = preprocess_data.split_data(one_hots, class_ids)
     # model(instances_aa, seq_train, seq_test, class_ids_train, class_ids_test)
     test()
 
