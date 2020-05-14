@@ -1,7 +1,9 @@
 #directories to ignore
 .idea/
-.idea
 
 #environments
 .venv
 venv/
+
+#other
+__pycache__/
