@@ -156,9 +156,21 @@ size [n_samples], holding the class labels for the training samples.
 def decision_tree(seq_train, seq_test, class_ids_train, class_ids_test, coding):
 
     logger.info(' start fitting decision tree model')
-    classifier = tree.DecisionTreeClassifier().fit(seq_train, class_ids_train)
+    classifier = tree.DecisionTreeClassifier(max_depth=5, criterion='entropy', class_weight='balanced', min_impurity_decrease=0.01).fit(seq_train, class_ids_train)
     algorithm = 'Decision tree'
     confusion_matrix(seq_test, class_ids_test, classifier, algorithm, coding)
+
+    if coding == 'characteristics':
+        feature_names_char = 40*['pI', 'weight']
+        plt.figure(figsize=(20, 12))
+        tree.plot_tree(classifier,
+              feature_names=feature_names_char,
+              class_names=['SP', 'NO SP'],
+              filled=True,
+              rounded=True,
+              fontsize=12)
+        plt.show()
+
 
 
 """
