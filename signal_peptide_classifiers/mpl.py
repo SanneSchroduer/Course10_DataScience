@@ -1,8 +1,13 @@
+import logging
 import preprocess_data
 import matplotlib.pyplot as plt
 from pandas import np
 from sklearn.metrics import plot_confusion_matrix
 from sklearn.neural_network import MLPClassifier
+
+logger = logging.getLogger('classifier')
+logging.info('Start processing data')
+logger.setLevel(logging.DEBUG)
 
 
 class MultiLayerPerception:
@@ -32,9 +37,11 @@ class MultiLayerPerception:
     def split_data(self, coding):
 
         if coding == 'identities':
-            self.seq_train, self.seq_test, self.class_ids_train, self.class_ids_test = preprocess_data.split_data(self.one_hots, self.class_ids)
+            self.seq_train, self.seq_test, self.class_ids_train, self.class_ids_test = preprocess_data.split_data(
+                self.one_hots, self.class_ids)
         else:
-            self.seq_train, self.seq_test, self.class_ids_train, self.class_ids_test = preprocess_data.split_data(self.instances_characteristics, self.class_ids)
+            self.seq_train, self.seq_test, self.class_ids_train, self.class_ids_test = preprocess_data.split_data(
+                self.instances_characteristics, self.class_ids)
 
     def classifier(self):
         clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5,2,), random_state=2)
@@ -56,9 +63,13 @@ mlp = MultiLayerPerception()
 mlp.parse_file()
 
 for coding in ['identities', 'characteristics']:
-    print(coding)
+    logger.info(coding + '\n')
     if coding == 'identities':
+        logger.info('pre process identities')
         mlp.pre_process_identities_data()
+    logger.info('split data')
     mlp.split_data(coding)
+    logger.info('create classifier')
     mlp.classifier()
+    logger.info('create confusion matrix')
     mlp.confusion_matrix(coding)
